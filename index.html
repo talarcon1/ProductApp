@@ -1,0 +1,94 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Product App</title>
+</head>
+<body>
+
+    <div>
+        <h2>Test Web API Products</h2>
+        <ul id="products" />
+    </div>
+    <div>
+        <h3>Search by SKU</h3>
+        <input type="text" id="prodId" size="5" />
+        <input type="button" value="Search" onclick="find();" />
+        <p id="product" />
+    </div>
+
+    <form id="saveContactForm" method="post">
+        <h3>Create a new Contact</h3>
+        <p>
+            <label for="contactId">SKU:</label>
+            <input type="text" name="Id" />
+        </p>
+        <p>
+            <label for="contactName">Product Name:</label>
+            <input type="text" name="Name" />
+        </p>
+        <p>
+            <label for="contactName">Category:</label>
+            <input type="text" name="Category" />
+        </p>
+        <p>
+            <label for="contactName">Price:</label>
+            <input type="number" name="Price" />
+        </p>
+        <input type="button" id="saveProduct" value="Save" />
+    </form>
+
+
+    <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-2.0.3.min.js"></script>
+    <script>
+    var uri = 'api/products';
+
+    $(document).ready(function () {
+      // Send an AJAX request
+      $.getJSON(uri)
+          .done(function (data) {
+            // On success, 'data' contains a list of products.
+            $.each(data, function (key, item) {
+              // Add a list item for the product.
+              $('<li>', { text: formatItem(item) }).appendTo($('#products'));
+            });
+          });
+    });
+
+    function formatItem(item) {
+      return item.Name + ': $' + item.Price;
+    }
+
+    function find() {
+      var id = $('#prodId').val();
+      $.getJSON(uri + '/' + id)
+          .done(function (data) {
+            $('#product').text(formatItem(data));
+          })
+          .fail(function (jqXHR, textStatus, err) {
+            $('#product').text('Error: ' + err);
+          });
+    }
+    </script>
+
+    <script type="text/javascript">
+$('#saveProduct').click(function()
+         {
+              $.post("api/products",
+                    $("#saveContactForm").serialize(),
+                    function(value)
+                    {
+                         $('#products').append('<li>' + value.Name + '</li>');
+                    },
+                    "json"
+              );
+         });
+    </script>
+
+</body>
+
+
+</html>
+
+
+
+
